@@ -1,0 +1,84 @@
+# Reflectiz Backend Assignment – Architecture Overview
+
+## System Overview
+The **Intelligenter** system is a modular backend application that collects, processes, and stores information about internet domains.  
+It provides REST APIs for retrieving and submitting data, with a scheduler that keeps stored domain information up to date.
+
+The system is designed for scalability, maintainability, and easy deployment using Docker.
+
+---
+
+## Core Design Principles
+- Clear separation between API, business logic, and persistence layers.  
+- Fully asynchronous and non-blocking using Node.js and TypeScript.  
+- Modular services that can scale independently.  
+- Lightweight and portable database layer (SQLite).  
+- Simple containerized deployment with Docker and Docker Compose.
+
+---
+
+## System Components
+
+### 1. API Layer (Express)
+- Handles REST API requests (`GET /get`, `POST /post`).
+- Validates inputs, manages errors, and returns JSON responses.
+- Communicates with the Analyzer Service and the database.
+
+### 2. Analyzer Service
+- Connects to external data sources such as VirusTotal and Whois.
+- Parses and normalizes the data.
+- Stores or updates the analysis results in the SQL database.
+
+### 3. Database Layer (SQL)
+- Uses SQLite for local storage and testing.
+- Can be easily migrated to PostgreSQL or MySQL for production.
+- Stores domain information, scan results, and timestamps.
+
+### 4. Scheduler
+- Runs once a month to refresh outdated domain records.
+- Automatically triggers new analysis tasks for stale data.
+- Implemented using Node.js timers or external job schedulers.
+
+### 5. Kafka (Optional)
+- Provides asynchronous message passing between services.
+- Suitable for larger-scale or distributed environments.
+
+### 6. UI (HTML)
+- A simple static page (`public/index.html`) for testing requests.
+- Allows sending POST and GET requests manually without Postman.
+
+---
+
+## Data Flow
+1. The user sends a **POST** request with a domain name.  
+2. The **API** validates the input and forwards it to the **Analyzer Service**.  
+3. The Analyzer retrieves VirusTotal and Whois data, then stores results in the **database**.  
+4. When the same domain is requested through a **GET**, data is returned from the database if available.  
+5. The **Scheduler** periodically refreshes domains that are outdated.  
+6. **Kafka** (if enabled) manages asynchronous domain processing at scale.
+
+---
+
+## Scalability and Deployment
+- Fully containerized for easy setup and deployment.  
+- `docker-compose.yml` orchestrates the API, database, and optional Kafka.  
+- Modular code structure allows separate deployment of API, Analyzer, and Scheduler as microservices.  
+- Ready for cloud deployment with minimal changes.
+
+---
+
+## Technologies
+- Node.js (v20 or higher)  
+- TypeScript  
+- Express  
+- SQLite (via sql.js)  
+- Docker and Docker Compose  
+- Kafka (optional)  
+- HTML/CSS for basic UI testing
+
+---
+
+## Author
+**Batsheva Finkel**  
+Jerusalem, Israel  
+November 2025
